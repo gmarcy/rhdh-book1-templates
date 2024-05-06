@@ -12,7 +12,7 @@ data:
         webhook_url: https://webhook-{{ .Values.app.name }}-el-{{ .Values.app.namespace }}{{ .Values.app.cluster }}
         webhook_secret: {{ .Values.git.webhookSecret }}
       tasks:
-        - name: Get gitlab projects
+        - name: Get git projects
           ansible.builtin.uri:
             url: https://{{ "{{" }} git_host {{ "}}" }}/api/v4/projects
             method: GET
@@ -23,7 +23,7 @@ data:
             status_code: [200]
           register: r_git_projects
 
-        - name: set gitlab projects id
+        - name: set git projects id
           set_fact:
             git_project_id: '{{ "{{" }} r_git_projects.json | json_query(query) {{ "}}" }}'
           vars:

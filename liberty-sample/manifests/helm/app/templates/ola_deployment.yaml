@@ -1,0 +1,18 @@
+apiVersion: apps.openliberty.io/v1
+kind: OpenLibertyApplication
+metadata:
+  name: {{ .Values.app.componentId }}
+  labels:
+    {{- include "backstage.labels" . | nindent 4 }}
+    {{- include "quarkus-template.labels" . | nindent 4 }}
+    app.kubernetes.io/part-of: idp-book-example
+spec:
+  applicationImage: icr.io/appcafe/open-liberty
+  expose: true
+  service:
+    type: ClusterIP
+  env:
+    - name: WLP_LOGGING_MESSAGE_FORMAT
+      value: "json"
+    - name: WLP_LOGGING_MESSAGE_SOURCE
+      value: "message,trace,accessLog,ffdc,audit"
