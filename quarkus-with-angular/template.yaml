@@ -15,17 +15,19 @@ spec:
   type: service
 
   parameters:
-    - title: Provide information about the GitLab location
+    - title: Provide information about the Git location
       required:
-        - gitlabGroup
+        - git_host
+        - repo_owner
       properties:
-        gitlabGroup:
+        git_host:
+          title: Git Host
+          type: string
+          description: Git Host
+        repo_owner:
           title: Repo Owner
           type: string
-          description: GitLab Organization
-          default: development
-          enum:
-            - development
+          description: Git Organization
         description:
           title: Description
           type: string
@@ -82,8 +84,8 @@ spec:
         url: ./skeleton
         targetPath: ./source
         values:
-          git_host: gitlab-gitlab${{parameters.cluster_id}}
-          gitlabGroup: ${{parameters.gitlabGroup}}
+          git_host: github.com
+          repoOwner: ${{parameters.repo_owner}}
           repoName: ${{parameters.namespace}}-${{parameters.application_id}}
           owner: ${{parameters.owner}}
           cluster_id: ${{parameters.cluster_id}}
@@ -92,11 +94,11 @@ spec:
           description: ${{parameters.description}}
     - id: publishSource
       name: Publishing to Source Code Repository
-      action: publish:gitlab
+      action: publish:github
       input:
         sourcePath: ./source
         description: ${{parameters.description}}
-        repoUrl: gitlab-gitlab${{parameters.cluster_id}}?owner=${{parameters.gitlabGroup}}&repo=${{parameters.namespace}}-${{parameters.application_id}}
+        repoUrl: ${{parameters.git_host}}?owner=${{parameters.repo_owner}}&repo=${{parameters.namespace}}-${{parameters.application_id}}
         defaultBranch: main
         protectDefaultBranch: false
         repoVisibility: public
@@ -107,13 +109,13 @@ spec:
         url: ./manifests
         copyWithoutTemplating: []
         values:
-          git_host: gitlab-gitlab${{parameters.cluster_id}}
+          git_host: github.com
           component_id: ${{parameters.namespace}}-${{parameters.application_id}}
           description: ${{parameters.description}}
-          destination: https://gitlab-gitlab${{parameters.cluster_id}}/${{parameters.gitlabGroup}}/${{parameters.namespace}}-${{parameters.application_id}}-gitops.git
-          source_repository: https://gitlab-gitlab${{parameters.cluster_id}}/${{parameters.gitlabGroup}}/${{parameters.namespace}}-${{parameters.application_id}}.git
+          destination: https://${{parameters.git_host}}/${{parameters.repo_owner}}/${{parameters.namespace}}-${{parameters.application_id}}-gitops.git
+          source_repository: https://${{parameters.git_host}}/${{parameters.repo_owner}}/${{parameters.namespace}}-${{parameters.application_id}}.git
           repository_name: ${{parameters.namespace}}-${{parameters.application_id}}
-          git_owner: ${{parameters.gitlabGroup}}
+          git_owner: ${{parameters.repo_owner}}
           cluster: ${{parameters.cluster_id}}
           namespace: ${{parameters.namespace}}
           image_host: ${{parameters.image_host}}
@@ -123,9 +125,9 @@ spec:
         targetPath: ./tenant-gitops
     - id: publishGitops
       name: Publishing to Deployment Resource Repository
-      action: publish:gitlab
+      action: publish:github
       input:
-        repoUrl: gitlab-gitlab${{parameters.cluster_id}}?owner=${{parameters.gitlabGroup}}&repo=${{parameters.namespace}}-${{parameters.application_id}}-gitops
+        repoUrl: ${{parameters.git_host}}?owner=${{parameters.repo_owner}}&repo=${{parameters.namespace}}-${{parameters.application_id}}-gitops
         title: gitops resources for ${{parameters.namespace}}-${{parameters.application_id}}
         description: gitops resources for ${{parameters.namespace}}-${{parameters.application_id}}
         sourcePath: ./tenant-gitops
@@ -149,9 +151,9 @@ spec:
       action: argocd:create-resources
       input:
         appName: ${{parameters.namespace}}-${{parameters.application_id}}-bootstrap
-        argoInstance: main
-        namespace: janus-argocd
-        repoUrl: https://gitlab-gitlab${{parameters.cluster_id}}/${{parameters.gitlabGroup}}/${{parameters.namespace}}-${{parameters.application_id}}-gitops.git
+        argoInstance: argocd
+        namespace: ${{parameters.namespace}}
+        repoUrl: https://${{parameters.git_host}}/${{parameters.repo_owner}}/${{parameters.namespace}}-${{parameters.application_id}}-gitops.git
         path: 'argocd/'
   output:
     links:

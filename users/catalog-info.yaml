@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: User
+metadata:
+  namespace: default
+  name: erica-banda-03
+spec:
+  profile:
+    displayName: Erica Banda
+    email: ebanda@example.com
+  memberOf: []

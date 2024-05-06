@@ -17,31 +17,28 @@ spec:
     - title: Provide information about the component
       required:
         - clusterId
-        - gitlabGroup
-        - gitlabRepos
+        - repoOwner
+        - gitRepos
       properties:
         clusterId:
           title: Cluster Id
           type: string
           description: Id of the cluster
           default: <XXX_XXX_XXX>
-        gitlabGroup:
-          title: GitLab repo owner
+        repoOwner:
+          title: Git repo owner
           type: string
-          description: the group/owner of the existing GitLab repo
-          default: development
-          enum:
-            - development
-        gitlabRepos:
-          title: GitLab repo names
+          description: the group/owner of the existing Git repo
+        gitRepos:
+          title: Git repo names
           type: array
           items:
             type: string
             title: repo name
-          description: the names of the existing GitLab repos to apply the patch on
+          description: the names of the existing Git repos to apply the patch on
           default: ''
-        gitlabBranch:
-          title: GitLab Branch
+        gitBranch:
+          title: Git Branch
           type: string 
           description: the name of the source branch for the merge request
           default: templated-app-patch
@@ -76,14 +73,14 @@ spec:
   steps:
     - id: fetch-repo
       name: Fetch repo(s)
-      each: ${{ parameters.gitlabRepos }}
+      each: ${{ parameters.gitRepos }}
       action: fetch:plain
       input:
-        url: https://gitlab-gitlab${{ parameters.clusterId }}/${{ parameters.gitlabGroup }}/${{ each.value }}
+        url: https://${{ parameters.git_host }}/${{ parameters.repoOwner }}/${{ each.value }}
         targetPath: ./${{ each.value }}    
     - id: patch-content
       name: Patch repo(s)
-      each: ${{ parameters.gitlabRepos }}
+      each: ${{ parameters.gitRepos }}
       action: roadiehq:utils:fs:replace
       input:
         files:
@@ -111,13 +108,13 @@ spec:
               </dependency>
     - id: open-mr
       name: Open merge request(s)
-      each: ${{ parameters.gitlabRepos }}
-      action: publish:gitlab:merge-request
+      each: ${{ parameters.gitRepos }}
+      action: publish:github:merge-request
       input: 
-        repoUrl: gitlab-gitlab${{ parameters.clusterId }}?repo=${{ each.value }}&owner=${{ parameters.gitlabGroup }}
+        repoUrl: ${{ parameters.git_host }}?repo=${{ each.value }}&owner=${{ parameters.repoOwner }}
         title: custom patches for quarkus component
         description: custom patches for quarkus component
-        branchName: ${{ parameters.gitlabBranch }}
+        branchName: ${{ parameters.gitBranch }}
         sourcePath: ./${{ each.value }}
         commitAction: update
     - id: log-mr

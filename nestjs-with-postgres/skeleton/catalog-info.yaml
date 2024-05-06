@@ -8,7 +8,7 @@ metadata:
     backstage.io/kubernetes-id: ${{values.component_id}}
     backstage.io/kubernetes-namespace: ${{values.namespace}}
     backstage.io/techdocs-ref: dir:.
-    gitlab.com/project-slug: ${{values.gitlabGroup}}/${{values.repoName}}
+    github.com/project-slug: ${{values.repoOwner}}/${{values.repoName}}
     janus-idp.io/tekton : ${{values.component_id}}
   tags:
     - nodejs
@@ -22,7 +22,7 @@ metadata:
     - url: https://console-openshift-console${{values.cluster_id}}/k8s/ns/${{values.namespace}}/deployments/${{values.component_id}}
       title: Deployment
       icon: web
-    - url: https://devspaces${{values.cluster_id}}/#https://${{values.git_host}}/${{values.gitlabGroup}}/${{values.repoName}}?che-editor=che-incubator/che-code/latest&devfilePath=.devfile-vscode.yaml
+    - url: https://devspaces${{values.cluster_id}}/#https://${{values.git_host}}/${{values.repoOwner}}/${{values.repoName}}?che-editor=che-incubator/che-code/latest&devfilePath=.devfile-vscode.yaml
       title: OpenShift Dev Spaces
       icon: web
 spec:
@@ -54,7 +54,7 @@ metadata:
     - url: https://${{values.component_id}}-${{values.namespace}}${{values.cluster_id}}/swagger
       title: Swagger UI
       icon: web
-    - url: https://${{values.git_host}}/${{values.gitlabGroup}}/${{values.repoName}}/-/blob/main/openapi.yaml
+    - url: https://${{values.git_host}}/${{values.repoOwner}}/${{values.repoName}}/-/blob/main/openapi.yaml
       title: API Spec
       icon: code
 spec:

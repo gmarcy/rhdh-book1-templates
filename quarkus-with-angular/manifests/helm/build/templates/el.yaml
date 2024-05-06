@@ -6,7 +6,7 @@ metadata:
 spec:
   serviceAccountName: pipeline
   triggers:
-  - name: gitlab-listener
+  - name: git-listener
     interceptors:
     - ref:
         name: cel
@@ -21,6 +21,6 @@ spec:
         value: null
     bindings:
       - kind: ClusterTriggerBinding
-        ref: gitlab-push
+        ref: git-push
     template:
       ref: {{ .Values.app.name }}-run-pipeline
